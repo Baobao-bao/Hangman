@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Hangman</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+    body{
+        scroll-margin-left:hidden;
+    }
+    img{
+        visibility: hidden;
+    }
+    #hanger{
+        visibility:visible;
+    }
+    #head {
+        position:absolute;
+        top:135px;
+        left:288px;
+        visibility:hidden;
+    }
+    #dead {
+        position:absolute;
+        top:183px;
+        left:315px;
+        /* visibility:visible; */
+    }
+    #body {
+        position:absolute;
+        top:200px;
+        left:292px;
+    }
+    #r_arm {
+        position:absolute;
+        top:200px;
+        left:310px;
+    }
+    #l_arm {
+        position:absolute;
+        top:210px;
+        left:240px;
+    }
+    #l_leg {
+        position:absolute;
+        top:296px;
+        left:260px;
+    }
+    #r_leg {
+        position:absolute;
+        top:292px;
+        left:305px;
+    }
+        #A, #B, #C, #D, #E, #F, #G, #H, #I, #J, #K, #L, #M, #N, #O, #P, #Q, #R, #S, #T, #U, #V, #W, #X, #Y, #Z{
+            background-color:lightgoldenrodyellow;
+            height: 2em;
+            width: 4em;
+            visibility: visible;
+            position:relative;
+        }
+        td{
+            padding: 5px;
+            border-bottom: 2px solid;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+        }
+        .white_space{
+            border-bottom: hidden;
+        }
+
+    </style>
+</head>
+<body>
+    <div id='image_holder'>
+        <img src="hanger1.png" id="hanger">
+        <img src="head.t.png" id="head">
+        <img src="body.t.png" id="body">
+        <img src="r_arm.t.png" id="r_arm">
+        <img src="l_arm.t.png" id="l_arm">
+        <img src="r_leg.t.png" id="r_leg">
+        <img src="l_leg.t.png" id="l_leg">
+        <img src="dead.t.png" id="dead">
+    </div>
+    <p id="score">Score: 0</p>
+    <div id='btn_holder'></div>
+    <table id='table'></table>
+    <script>
+
+            let phrases = {
+            "Rain on your parade": "To spoil someone's fun or plans", 'Go out on a limb': "putting yourself in a risky situation in order to help someone",
+            'Ugly duckling': "One who may seem plain at first in appearance or capability, but later turns out to be beautiful or great.",
+            'Down and out': "Someone who has become incapacitated", 'Back to square one': "To go back to the beginning",
+            'Cut to the chase': "To get to the point", 'Playing for keeps': "Said when things are about to get serious", 'Right out of the gate': "Right from the beginning",
+            'A piece of cake': "A task that is simple to accomplish", 'Long in the tooth': "Old in age", 'Easy as pie': "Something that is easy",
+            'Beating around the bush': "Someone who avoids the main point", 'Happy as a clam': "Feeling delighted", 'Back to the drawing board': "Starting over again on a new design from a previously failed attempt",
+            'Jaws of life': "Usually this references a tool used by rescuers when they pry or cut open a car to save the occupant.",
+            'Raining cats and dogs': "When it is raining heavily", 'Top drawer': "High quality", 'Elvis has left the building': "Something that is all over",
+            'Greased lightning': "Very fast or quick", 'Hands down': "Anything that is easy or has no difficulty", 'Poke fun at': "Making fun of something or someone",
+            'A chip on your shoulder': "Being angry about something that happened in the past", 'An arm and a leg': "Something that is extremely expensive",
+            'Curiosity killed the cat': "Typically said to indicate that any further investigation into a situation may lead to harm", 'Burst your bubble': "To ruin someone's happy moment",
+            'Jig is up': "To be caught", 'I smell a rat': "A feeling that something is quite to right", 'Put sock in it': "Asking someone to be quiet",
+            'Elephant in the room': "Failing to address an issue that stands out in a major way", 'Fight fire with fire': "To retaliate with an attack that is similar to the attack used against you",
+            'On the ropes': "Being in a situation that looks to be hopeless", 'Flea market': "A type of marketplace where inexpensive goods are sold or bartered",
+            'Drawing a blank': "Failing to recall a memory", 'Know the ropes': "Having a familiarity or understanding of how something works",
+            'Close but no cigar': "Coming close to a successful outcome only to fall short at the end", 'What goes up must come down': "Something good will not last forever",
+            'Beating a dead horse': "To bring up an issue that has already been resolved", 'Keep your eyes peeled': "Paying careful attention to something", 'Right off the bat': "Immediately",
+            'Par for the course': "What you would expect to happen", 'Down to the wire': "A tense situation where the outcome is decided only in the last few seconds", 'Heads up': "Used as an advanced warning",
+            'On the same page': "Thinking alike or understanding something in a similar way with others", 'Head over heels': "Falling deeply in love with another person", 'Throw in the towel': "Giving up",
+            'Underneath the weather': "Not feeling well", 'Break the ice': "Breaking down a social stiffness", 'Down to earth': "Practical or humble",
+            'Cry over spilt milk': "regret about something that has already happened or cannot be changed", 'Fish out of water': "Someone being in a situation that they are unfamiliar or unsuited for",
+            'Jumping the gun': "Something that occurs too early before presentations are ready", 'Shot in the dark': "An attempt that has little chances for success", 'Dropping like flies': "To fall down ill or to die in large numbers"
+        };
+        //generate random phrase and its definition, store them in an array and return it
+        function RandomWord() {
+            let rand_w = Object.keys(phrases)[Math.floor(Math.random() * Object.keys(phrases).length)]
+            let rand_d = Object.values(phrases)[Math.floor(Math.random() * Object.keys(phrases).length)]
+            let li = [rand_w, rand_d]
+            return li
+        }
+
+         //create buttons with id and centent as a letter
+        function buttons_creator(letter){
+            let btn = document.createElement('button');
+            btn.innerHTML = letter
+            btn.id = letter
+            // btn.onclick = function () {btn.style.visibility = "hidden"}
+            document.getElementById('btn_holder').appendChild(btn)
+        }
+        //generate letter 'A' to 'Z' and pass it to button creator to create button
+        function hi(){
+            let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            for (let i = 0; i < 26; i++) {
+                letter  = letters[i]
+                buttons_creator(letter)
+            }
+        }
+        //create table to hold a phrase, parameter num is the length of the phrase and word means phrase
+        function table_creator(num,word){
+            let tr = document.createElement('tr');
+            // use for loop <td> for each letter in the phrase
+            for (let i = 0; i < num; i++) {
+                let td = document.createElement('td')
+                //the if statement below add a class attribute to <td> whose value is ' '(white space), then we use css to hide border-bottom line of //these <td>   
+                if (word[i] === ' '){
+                    td.setAttribute('class', 'white_space')//this statement adds an attribute "class=white_space" to <td> 
+                }
+                td.innerHTML = ' '
+                td.id = i+"td" // set the id of <td> as '0td','1td','2td'...
+                tr.appendChild(td)
+            }
+            document.getElementById('table').appendChild(tr)
+        }
+
+        let count = 0
+        function counter(){
+            count += 1
+            document.getElementById('score').innerHTML = "Score: " + count;
+        }
+
+        //this function assigns each buttons an onclick fucntion
+        function set_func(btn_num){
+            for (let i = 0; i < btn_num; i++) {
+                let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                let j = letters[i]
+                document.getElementById(j).onclick = function check_answer(){
+                    document.getElementById(j).style.visibility = "hidden"
+                    let id = this.id
+                    id  = id.toLowerCase()
+                    let count = 0
+                    //this for loop counts the number of letter on the button that user clicks
+                    for (let i = 0; i < word.length; i++) {
+                        if (word[i] === id){
+                            count++
+                        }
+                    }
+                    if (count === 0){ //count===0 means the answer is wrong, show the hangman images step by
+                        wrong_ans_num++
+                        if(wrong_ans_num == 1){
+                            document.getElementById('head').style.visibility = 'visible';
+                        }if(wrong_ans_num == 2){
+                            document.getElementById('body').style.visibility = 'visible';
+                        }if(wrong_ans_num == 3){
+                            document.getElementById('r_arm').style.visibility = 'visible';
+                        }if(wrong_ans_num == 4){
+                            document.getElementById('l_arm').style.visibility = 'visible';
+                        }if(wrong_ans_num == 5){
+                            document.getElementById('r_leg').style.visibility = 'visible';
+                        }if(wrong_ans_num == 6){
+                            document.getElementById('l_leg').style.visibility = 'visible';
+                        }if(wrong_ans_num == 7){
+                            document.getElementById('dead').style.visibility = 'visible';
+                            document.getElementById('head').style.visibility = 'hidden';
+                            for (let par=0;par<26;par++) {
+                            document.getElementById(letters[par]).style.visibility = "hidden";
+                            }
+                        }
+
+                    }else{//the answer is correct, show the letters in <td>
+                        let index = 0;
+                        for (let i = 0; i < count; i++) {
+                            index = word.indexOf(id,index)// indexOf function finds and returns the first occurance from index,eg 'earring'.indexOf('r',2) means find 'r' from index='2', it returns 2(index of first "r")
+                            let id_of_show_letter = index + 'td';
+                            document.getElementById(id_of_show_letter).innerHTML = id;
+                            index++
+                            counter();
+                        }
+                    }
+                };
+            }
+        }
+
+       
+
+
+        hi()
+        let wrong_ans_num = 0
+        let word_and_def = RandomWord()
+        let word = word_and_def[0]
+        word= word.toLowerCase()
+        let def = word_and_def[1]
+        console.log(word)
+        set_func(26)
+        table_creator(word.length,word)
+    </script>
+</body>
+</html>
