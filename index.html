@@ -45,11 +45,12 @@
     </style>
 </head>
 <body>
+    <h1 id='game_over'></h1>
     <h1 id='win_massage'></h1>
     <div id='image_holder'>
         <img src="0mist.png" id="hanger">
     </div>
-    <button id='reset'>reset/next</button>
+    <button id='reset'>reset</button>
     <p id="score">Score: 0</p>
     <div id='btn_holder'></div>
     <table id='table'></table>
@@ -82,8 +83,8 @@
         //generate random phrase and its definition, store them in an array and return it
         function RandomWord() {
             let rand_w = Object.keys(phrases)[Math.floor(Math.random() * Object.keys(phrases).length)]
-            let rand_d = Object.values(phrases)[Math.floor(Math.random() * Object.keys(phrases).length)]
-            let li = [rand_w, rand_d]
+            Definition = phrases[rand_w]
+            let li = [rand_w, Definition]
             return li
         }
 
@@ -155,8 +156,15 @@
                             for (let par=0;par<26;par++) {
                             document.getElementById(letters[par]).style.visibility = "hidden";
                             }
+                        let user_name = prompt('please enter your name:')
+                        let score = document.getElementById('score').innerText
+                        document.getElementById('image_holder').style.visibility = 'hidden';
+                        document.getElementById('score').style.visibility = 'hidden';
+                        document.getElementById('btn_holder').style.visibility = 'hidden';
+                        document.getElementById('def').style.visibility = 'hidden';
+                        document.getElementById('table').style.visibility = 'hidden';
+                        document.getElementById("game_over").innerHTML = 'Game over! '+ user_name + ', ' + 'your score is '+ score + '!';
                         }
-
                     }else{//the answer is correct, show the letters in <td>
                         let index = 0;
                         for (let i = 0; i < count; i++) {
