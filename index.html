@@ -7,52 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-    body{
-        scroll-margin-left:hidden;
-    }
-    img{
-        visibility: hidden;
-    }
-    #hanger{
-        visibility:visible;
-    }
-    #head {
-        position:absolute;
-        top:135px;
-        left:288px;
-        visibility:hidden;
-    }
-    #dead {
-        position:absolute;
-        top:183px;
-        left:315px;
-        /* visibility:visible; */
-    }
-    #body {
-        position:absolute;
-        top:200px;
-        left:292px;
-    }
-    #r_arm {
-        position:absolute;
-        top:200px;
-        left:310px;
-    }
-    #l_arm {
-        position:absolute;
-        top:210px;
-        left:240px;
-    }
-    #l_leg {
-        position:absolute;
-        top:296px;
-        left:260px;
-    }
-    #r_leg {
-        position:absolute;
-        top:292px;
-        left:305px;
-    }
+
         #A, #B, #C, #D, #E, #F, #G, #H, #I, #J, #K, #L, #M, #N, #O, #P, #Q, #R, #S, #T, #U, #V, #W, #X, #Y, #Z{
             background-color:lightgoldenrodyellow;
             height: 2em;
@@ -62,7 +17,7 @@
         }
         td{
             padding: 5px;
-            border-bottom: 2px solid;
+            border-bottom: 2px solid black;
             width: 30px;
             height: 30px;
             text-align: center;
@@ -70,25 +25,36 @@
         .white_space{
             border-bottom: hidden;
         }
+        #hanger{
+            width: 300px;
+            height: 410px;
+        }
+        body{
+            width: 100vw;
+            text-align: center;
+        }
+        table{
+            margin-left:auto;
+            margin-right:auto;
+        }
+        #congrats{
+            width: 700px;
+            position: absolute;
+        }
 
     </style>
 </head>
 <body>
+    <h1 id='win_massage'></h1>
     <div id='image_holder'>
-        <img src="hanger1.png" id="hanger">
-        <img src="head.t.png" id="head">
-        <img src="body.t.png" id="body">
-        <img src="r_arm.t.png" id="r_arm">
-        <img src="l_arm.t.png" id="l_arm">
-        <img src="r_leg.t.png" id="r_leg">
-        <img src="l_leg.t.png" id="l_leg">
-        <img src="dead.t.png" id="dead">
+        <img src="0mist.png" id="hanger">
     </div>
+    <button id='reset'>reset/next</button>
     <p id="score">Score: 0</p>
     <div id='btn_holder'></div>
     <table id='table'></table>
+    <p id="def"></p>
     <script>
-
             let phrases = {
             "Rain on your parade": "To spoil someone's fun or plans", 'Go out on a limb': "putting yourself in a risky situation in order to help someone",
             'Ugly duckling': "One who may seem plain at first in appearance or capability, but later turns out to be beautiful or great.",
@@ -140,21 +106,23 @@
         //create table to hold a phrase, parameter num is the length of the phrase and word means phrase
         function table_creator(num,word){
             let tr = document.createElement('tr');
+            tr.setAttribute('id','tr')
             // use for loop <td> for each letter in the phrase
             for (let i = 0; i < num; i++) {
                 let td = document.createElement('td')
                 //the if statement below add a class attribute to <td> whose value is ' '(white space), then we use css to hide border-bottom line of //these <td>   
                 if (word[i] === ' '){
                     td.setAttribute('class', 'white_space')//this statement adds an attribute "class=white_space" to <td> 
+                    td.innerHTML = ' '
+                }else{
+                td.innerHTML = ''
                 }
-                td.innerHTML = ' '
                 td.id = i+"td" // set the id of <td> as '0td','1td','2td'...
                 tr.appendChild(td)
             }
             document.getElementById('table').appendChild(tr)
         }
 
-        let count = 0
         function counter(){
             count += 1
             document.getElementById('score').innerHTML = "Score: " + count;
@@ -162,8 +130,8 @@
 
         //this function assigns each buttons an onclick fucntion
         function set_func(btn_num){
+            letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             for (let i = 0; i < btn_num; i++) {
-                let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 let j = letters[i]
                 document.getElementById(j).onclick = function check_answer(){
                     document.getElementById(j).style.visibility = "hidden"
@@ -177,22 +145,13 @@
                         }
                     }
                     if (count === 0){ //count===0 means the answer is wrong, show the hangman images step by
+                        let src = document.getElementById('hanger').getAttribute('src')
+                        console.log(src)//-----------------
+                        wrong_ans_num = parseInt(src[0]);
+                        console.log(wrong_ans_num)//-------------
                         wrong_ans_num++
-                        if(wrong_ans_num == 1){
-                            document.getElementById('head').style.visibility = 'visible';
-                        }if(wrong_ans_num == 2){
-                            document.getElementById('body').style.visibility = 'visible';
-                        }if(wrong_ans_num == 3){
-                            document.getElementById('r_arm').style.visibility = 'visible';
-                        }if(wrong_ans_num == 4){
-                            document.getElementById('l_arm').style.visibility = 'visible';
-                        }if(wrong_ans_num == 5){
-                            document.getElementById('r_leg').style.visibility = 'visible';
-                        }if(wrong_ans_num == 6){
-                            document.getElementById('l_leg').style.visibility = 'visible';
-                        }if(wrong_ans_num == 7){
-                            document.getElementById('dead').style.visibility = 'visible';
-                            document.getElementById('head').style.visibility = 'hidden';
+                        document.getElementById('hanger').src = wrong_ans_num + 'mist.png'
+                        if(wrong_ans_num == 7){
                             for (let par=0;par<26;par++) {
                             document.getElementById(letters[par]).style.visibility = "hidden";
                             }
@@ -206,24 +165,66 @@
                             document.getElementById(id_of_show_letter).innerHTML = id;
                             index++
                             counter();
+                            //judge if user finish the phrase, if the phrase is finished, hide the buttons
                         }
+                        let num_of_hidden_letter = 0
+                        for (let par=0;par < word.length;par++) {
+                            // num_of_hidden_letter = 0;
+                            let text_in_td = document.getElementById(par+'td').innerHTML
+                            if (text_in_td == ""){
+                                num_of_hidden_letter++;
+                            }
+                        }
+                        if (num_of_hidden_letter == 0){
+                            for (let par=0;par<26;par++) {
+                            document.getElementById(letters[par]).style.visibility = "visible";
+                            }
+                        document.getElementById('win_massage').innerHTML = 'Doog job!';
+                        setTimeout(function(){document.getElementById('win_massage').innerHTML = '';
+                        },2000)
+                        change_word(count)
+                        }
+
                     }
                 };
             }
         }
+        function change_word(score){
+            var parent = document.getElementById("table");
+            var child = document.getElementById("tr");
+            parent.removeChild(child);
 
-       
+            var count = score;
+            var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            var wrong_ans_num = 0
+            var word_and_def = RandomWord()
+            var word = word_and_def[0]
+            word= word.toLowerCase()
+            var def = word_and_def[1]
+            console.log(word)
+            set_func(26)
+            table_creator(word.length,word)
+            document.getElementById('def').innerHTML = 'Hint: ' + def;
+
+        }
+
+        document.getElementById('reset').onclick = function(){
+            window.location.reload()
+        }
 
 
         hi()
-        let wrong_ans_num = 0
-        let word_and_def = RandomWord()
-        let word = word_and_def[0]
+        var count = 0;
+        var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        var wrong_ans_num = 0
+        var word_and_def = RandomWord()
+        var word = word_and_def[0]
         word= word.toLowerCase()
-        let def = word_and_def[1]
+        var def = word_and_def[1]
         console.log(word)
         set_func(26)
         table_creator(word.length,word)
+        document.getElementById('def').innerHTML = 'Hint: ' + def;
     </script>
 </body>
 </html>
