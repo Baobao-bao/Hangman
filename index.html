@@ -158,6 +158,7 @@
                             }
                         let user_name = prompt('please enter your name:')
                         let score = document.getElementById('score').innerText
+                        score = score.split(':')[1]
                         document.getElementById('image_holder').style.visibility = 'hidden';
                         document.getElementById('score').style.visibility = 'hidden';
                         document.getElementById('btn_holder').style.visibility = 'hidden';
